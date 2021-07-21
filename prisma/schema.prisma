@@ -1,0 +1,101 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByAggregateGroup", "referentialActions"]
+}
+
+model User {
+  id              Int               @id @default(autoincrement())
+  email           String            @unique @db.VarChar(255)
+  password        String            @db.VarChar(255)
+  pseudo          String?           @unique @db.VarChar(255)
+  avatarUrl       String?           @db.VarChar(255)
+  role            String            @default("user") @db.VarChar(255)
+  gems            Int?
+  Animation       Animation[]
+  AnimationReview AnimationReview[]
+  Registration    Registration[]
+  Guide           GuideReview[]     @relation("Guide")
+  Reviewer        GuideReview[]     @relation("Reviewer")
+}
+
+model Animation {
+  id                 Int               @id @default(autoincrement())
+  title              String            @db.VarChar(255)
+  description        String            @db.Text
+  language           String            @db.VarChar(100)
+  startDateTime      DateTime
+  duration           Int
+  maxAvailablePlaces Int
+  availablePlaces    Int
+  cost               Int
+  videoLink          String            @db.VarChar(255)
+  guideId            Int
+  Guide              User              @relation(fields: [guideId], references: [id], onDelete: Cascade)
+  siteId             Int
+  Site               Site              @relation(fields: [siteId], references: [id])
+  AnimationReview    AnimationReview[]
+  Registration       Registration[]
+}
+
+model Site {
+  id            Int          @id @default(autoincrement())
+  name          String       @db.VarChar(100)
+  description   String       @db.VarChar(255)
+  address       String       @db.VarChar(255)
+  postcode      String       @db.VarChar(10)
+  city          String       @db.VarChar(100)
+  country       String       @db.VarChar(100)
+  GPS_latitude  Float?
+  GPS_longitude Float?
+  categoryId    Int
+  Category      SiteCategory @relation(fields: [categoryId], references: [id])
+  Animation     Animation[]
+}
+
+model SiteCategory {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  Site Site[]
+}
+
+model AnimationReview {
+  animationId Int
+  Animation   Animation @relation(fields: [animationId], references: [id], onDelete: Cascade)
+  userId      Int
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating      Int
+  comment     String?   @db.Text
+
+  @@id([userId, animationId])
+}
+
+model GemsCost {
+  id     Int     @id @default(autoincrement())
+  amount Int
+  price  Decimal @db.Decimal(10, 2)
+}
+
+model Registration {
+  id          Int       @id @default(autoincrement())
+  animationId Int
+  Animation   Animation @relation(fields: [animationId], references: [id], onDelete: Cascade)
+  attendeeId  Int
+  Attendee    User      @relation(fields: [attendeeId], references: [id], onDelete: Cascade)
+  quantity    Int
+}
+
+model GuideReview {
+  guideId    Int
+  Guide      User    @relation("Guide", fields: [guideId], references: [id], onDelete: Cascade)
+  reviewerId Int
+  Reviewer   User    @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  rating     Int
+  comment    String? @db.Text
+
+  @@id([reviewerId, guideId])
+}

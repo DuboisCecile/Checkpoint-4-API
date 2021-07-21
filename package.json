@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/DuboisCecile/Checkpoint-4-API#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "@prisma/client": "2.27.0",
+    "express": "^4.17.1",
+    "prisma": "2.27.0"
   },
   "devDependencies": {
     "eslint": "^7.14.0",
