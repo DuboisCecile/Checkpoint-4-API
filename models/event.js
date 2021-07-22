@@ -1,14 +1,13 @@
 const db = require('../db');
 
-const findEvent = async (id) => {
-  const idInt = parseInt(id, 10);
-  const animation = await db.animation.findUnique({
-    where: {
-      id: idInt,
+const findEvent = (id) =>
+  db.event.findUnique({
+    where: { id: parseInt(id, 10) },
+    include: {
+      Guide: true,
+      Site: true,
     },
   });
-  return animation;
-};
 
 const createEvent = async ({
   title,
@@ -22,7 +21,6 @@ const createEvent = async ({
   cost,
   guideId,
 }) => {
-  console.log(maxPlaces);
   return db.event.create({
     data: {
       title,
@@ -40,7 +38,28 @@ const createEvent = async ({
   });
 };
 
+const findAllEvents = async () => {
+  return db.event.findMany({
+    include: {
+      Guide: true,
+      Site: true,
+    },
+  });
+};
+
+const RecordRegistration = async ({ quantity, attendeeId, eventId }) => {
+  return db.registration.create({
+    data: {
+      quantity: parseInt(quantity, 10),
+      attendeeId: parseInt(attendeeId, 10),
+      eventId: parseInt(eventId, 10),
+    },
+  });
+};
+
 module.exports = {
   findEvent,
   createEvent,
+  findAllEvents,
+  RecordRegistration,
 };

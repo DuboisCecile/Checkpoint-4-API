@@ -57,7 +57,6 @@ sitesRouter.get(
   '/:id',
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    console.log(id);
     try {
       const site = await Site.findUnique(id);
       if (!Object.entries(site).length)
