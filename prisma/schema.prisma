@@ -30,9 +30,10 @@ model Event {
   language           String         @db.VarChar(100)
   startDateTime      DateTime
   duration           Int
-  maxAvailablePlaces Int
-  availablePlaces    Int
+  maxAvailablePlaces Int?
+  availablePlaces    Int?
   cost               Int
+  image              String?        @db.VarChar(255)
   videoLink          String         @db.VarChar(255)
   guideId            Int
   Guide              User           @relation(fields: [guideId], references: [id], onDelete: Cascade)
@@ -46,6 +47,7 @@ model Site {
   id            Int          @id @default(autoincrement())
   name          String       @db.VarChar(100)
   description   String       @db.VarChar(255)
+  image         String?      @db.VarChar(255)
   address       String       @db.VarChar(255)
   postcode      String       @db.VarChar(10)
   city          String       @db.VarChar(100)

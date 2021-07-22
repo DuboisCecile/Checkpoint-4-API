@@ -27,7 +27,6 @@ sitesRouter.get(
 );
 
 sitesRouter.post('/', (req, res) => {
-  console.log(req.body);
   return Site.createSite(req.body)
     .then((favorite) => {
       res.json(favorite);
@@ -39,5 +38,38 @@ sitesRouter.post('/', (req, res) => {
         .send("Il y a eu une erreur lors de l'enregistrement du site");
     });
 });
+
+sitesRouter.post(
+  '/search',
+  asyncHandler(async (req, res) => {
+    const { searchValue } = req.body;
+    try {
+      const searchedSites = await Site.findByQuery(searchValue);
+      res.send(searchedSites);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error);
+    }
+  })
+);
+
+sitesRouter.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    console.log(id);
+    try {
+      const site = await Site.findUnique(id);
+      if (!Object.entries(site).length)
+        res.status(200).send(`Site (${id}) non trouvé`);
+      else {
+        res.send(site);
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error);
+    }
+  })
+);
 
 module.exports = sitesRouter;

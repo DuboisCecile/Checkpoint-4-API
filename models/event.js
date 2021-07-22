@@ -14,8 +14,7 @@ const createEvent = async ({
   title,
   description,
   siteId,
-  date,
-  time,
+  startDateTime,
   language = 'Français',
   duration,
   videoLink,
@@ -23,17 +22,18 @@ const createEvent = async ({
   cost,
   guideId,
 }) => {
+  console.log(maxPlaces);
   return db.event.create({
     data: {
       title,
       description,
       language,
       siteId: parseInt(siteId, 10),
-      startDateTime: new Date(`${date} ${time}`),
+      startDateTime,
       duration: parseInt(duration, 10),
       videoLink,
-      availablePlaces: parseInt(maxPlaces, 10),
-      maxAvailablePlaces: parseInt(maxPlaces, 10),
+      availablePlaces: maxPlaces,
+      maxAvailablePlaces: maxPlaces,
       cost: parseInt(cost, 10),
       guideId: parseInt(guideId, 10),
     },

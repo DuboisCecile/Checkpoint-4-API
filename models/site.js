@@ -15,8 +15,11 @@ const findSitesCategories = async () => {
 };
 
 const findAllSites = async () => {
-  return db.site.findMany();
-  // return sites;
+  return db.site.findMany({
+    include: {
+      Category: true,
+    },
+  });
 };
 
 const createSite = async ({
@@ -27,6 +30,7 @@ const createSite = async ({
   postcode,
   city,
   country,
+  image,
 }) => {
   return db.site.create({
     data: {
@@ -37,13 +41,40 @@ const createSite = async ({
       postcode,
       city,
       country,
+      image,
     },
   });
 };
+
+const findUnique = (id) =>
+  db.site.findUnique({
+    where: { id: parseInt(id, 10) },
+    include: { Category: true },
+  });
+
+const findByQuery = (searchValue) =>
+  db.site.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: searchValue,
+          },
+        },
+        {
+          description: {
+            contains: searchValue,
+          },
+        },
+      ],
+    },
+  });
 
 module.exports = {
   findSite,
   findSitesCategories,
   findAllSites,
   createSite,
+  findByQuery,
+  findUnique,
 };
