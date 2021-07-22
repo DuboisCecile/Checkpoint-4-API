@@ -1,6 +1,7 @@
 const eventsRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const Event = require('../models/event');
+const requireCurrentUser = require('../middlewares/requireCurrentUser');
 
 eventsRouter.get(
   '/',
@@ -17,7 +18,7 @@ eventsRouter.get(
 eventsRouter.get(
   '/:id',
   asyncHandler(async (req, res) => {
-    const { id } = req.params;
+    const id = parseInt(req.params.id, 10);
     try {
       const event = await Event.findEvent(id);
       if (!Object.entries(event).length)
@@ -47,9 +48,16 @@ eventsRouter.post('/', (req, res) => {
 
 eventsRouter.post(
   '/register',
+  requireCurrentUser,
   asyncHandler(async (req, res) => {
+    const { quantity, eventId } = req.body;
+    const attendeeId = req.currentUser.id;
     try {
-      res.status(200).send(await Event.RecordRegistration(req.body));
+      res
+        .status(200)
+        .send(
+          await Event.RecordRegistration({ quantity, eventId, attendeeId })
+        );
     } catch (error) {
       console.error(error);
       res.status(500).send(error);

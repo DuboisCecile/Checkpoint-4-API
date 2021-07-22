@@ -78,6 +78,7 @@ model EventReview {
 
 model GemsCost {
   id     Int     @id @default(autoincrement())
+  label  String  @db.VarChar(255)
   amount Int
   price  Decimal @db.Decimal(10, 2)
 }
