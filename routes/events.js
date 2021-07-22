@@ -1,6 +1,7 @@
 const eventsRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const Event = require('../models/event');
+const User = require('../models/user');
 const requireCurrentUser = require('../middlewares/requireCurrentUser');
 
 eventsRouter.get(
@@ -22,7 +23,7 @@ eventsRouter.get(
     try {
       const event = await Event.findEvent(id);
       if (!Object.entries(event).length)
-        res.status(200).send(`Evènement (${id}) non trouvé`);
+        res.status(404).send(`Evènement (${id}) non trouvé`);
       else {
         res.send(event);
       }
@@ -50,14 +51,21 @@ eventsRouter.post(
   '/register',
   requireCurrentUser,
   asyncHandler(async (req, res) => {
-    const { quantity, eventId } = req.body;
+    const { quantity, eventId, totalCost } = req.body;
     const attendeeId = req.currentUser.id;
     try {
-      res
-        .status(200)
-        .send(
-          await Event.RecordRegistration({ quantity, eventId, attendeeId })
-        );
+      const recording = await Event.RecordRegistration({
+        quantity,
+        eventId,
+        attendeeId,
+      });
+      if (!Object.entries(recording).length) {
+        res.status(404).send(`Il y a eu un problème lors de l'enregistrement`);
+      } else {
+        await Event.decrementPlaces({ quantity, eventId });
+        await User.useGems({ totalCost, attendeeId });
+        res.send(recording);
+      }
     } catch (error) {
       console.error(error);
       res.status(500).send(error);

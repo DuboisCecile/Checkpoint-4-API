@@ -57,9 +57,20 @@ const RecordRegistration = async ({ quantity, attendeeId, eventId }) => {
   });
 };
 
+const decrementPlaces = async ({ quantity, eventId }) => {
+  const eventToUpdate = await findEvent(eventId);
+  return db.event.update({
+    where: { id: parseInt(eventId, 10) },
+    data: {
+      availablePlaces: eventToUpdate.availablePlaces - quantity,
+    },
+  });
+};
+
 module.exports = {
   findEvent,
   createEvent,
   findAllEvents,
   RecordRegistration,
+  decrementPlaces,
 };

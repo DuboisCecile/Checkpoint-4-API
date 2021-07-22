@@ -48,6 +48,17 @@ const buyGems = async ({ id, gems }) => {
   });
 };
 
+const useGems = async ({ attendeeId, totalCost }) => {
+  const userId = parseInt(attendeeId, 10);
+  const user = await findOne(userId);
+  return db.user.update({
+    where: { id: userId },
+    data: {
+      gems: user.gems - totalCost,
+    },
+  });
+};
+
 // const hashPassword = (plainPassword) =>
 //   argon2.hash(plainPassword, hashingOptions);
 
@@ -122,6 +133,7 @@ module.exports = {
   findMany,
   // update,
   buyGems,
+  useGems,
   getSafeAttributes,
   findRegistrations,
 };
