@@ -67,10 +67,29 @@ const decrementPlaces = async ({ quantity, eventId }) => {
   });
 };
 
+const findByQuery = (searchValue) =>
+  db.event.findMany({
+    where: {
+      OR: [
+        {
+          title: {
+            contains: searchValue,
+          },
+        },
+        {
+          description: {
+            contains: searchValue,
+          },
+        },
+      ],
+    },
+  });
+
 module.exports = {
   findEvent,
   createEvent,
   findAllEvents,
   RecordRegistration,
   decrementPlaces,
+  findByQuery,
 };
